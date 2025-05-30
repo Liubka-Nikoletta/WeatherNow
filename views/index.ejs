@@ -9,14 +9,46 @@
     <link rel="stylesheet" href="/style.css">
 </head>
 <body>
+<% const emojiMap = {
+    'light rain': '🌦️',
+    'moderate rain': '🌧️',
+    'heavy intensity rain': '🌧️',
+    'very heavy rain': '🌧️',
+    'extreme rain': '🌧️',
+    'freezing rain': '❄️',
+    'light snow': '🌨️',
+    'overcast clouds': '☁️',
+    'scattered clouds': '🌥️',
+    'broken clouds': '🌥️',
+    'few clouds': '⛅',
+    'clear sky': '☀️',
+    'mist': '🌫️',
+
+    'Thunderstorm': '⛈️',
+    'Drizzle': '🌦️',
+    'Rain': '🌧️',
+    'Snow': '❄️',
+    'Clear': '☀️',
+    'Clouds': '☁️',
+    'Mist': '🌫️',
+    'Smoke': '🌫️',
+    'Haze': '🌫️',
+    'Dust': '🌫️',
+    'Fog': '🌫️',
+    'Sand': '🌫️',
+    'Ash': '🌋',
+    'Squall': '🌬️',
+    'Tornado': '🌪️'
+}; %>
 <div class="container">
     <header>
         <h1>🌤️ WeatherNow</h1>
-        <p class="subtitle">Детальний прогноз погоди на 7 днів</p>
+        <p class="subtitle">Детальний прогноз погоди на 5 днів</p>
     </header>
     <section class="search-section">
-        <form action="search-form">
+        <form action="/weather" method="POST">
             <input
+                    name="city"
                     type="text"
                     class="search-input"
                     placeholder="Введіть назву міста (наприклад: Львів, Київ, Одеса...)"
@@ -27,12 +59,56 @@
     </section>
     <div id="weatherResults">
         <section class="weather-results">
-            <h2 class="city-name" id="cityName">Назва міста</h2>
-            <div class="forecast-grid">
-                <div class="bay-card"></div>
-            </div>
+            <% if (typeof forecast !== 'undefined') { %>
+                <h2 class="city-name" id="cityName"><%= city %></h2>
+                <div class="forecast-grid">
+                    <% forecast.forEach(day => { %>
+                        <div class="day-card">
+                            <div class="day-header">
+                                <div class="day-name">
+                                    <%= new Date(day.dt * 1000).toLocaleString("uk-UA", { weekday: 'long' }) %>
+                                </div>
+                                <div class="day-date">
+                                    <%= new Date(day.dt * 1000).toLocaleString("uk-UA", { day: '2-digit', month: 'long' }) %>
+                                </div>
+                            </div>
+
+                            <div class="weather-icon">
+                                <%= emojiMap[day.weather[0].description.toLowerCase()] || emojiMap[day.weather[0].main] || '❓' %>
+                            </div>
+
+                            <div class="temperature">
+                                <div class="temp-main">
+                                    <%= Math.round(day.temp_avg - 273.15) %>°C
+                                </div>
+                                <div class="temp-range">
+                                    <%= Math.round(day.temp_min - 273.15) %>° / <%= Math.round(day.temp_max - 273.15) %>°
+                                </div>
+                            </div>
+
+                            <div class="weather-description">
+                                <%= day.weather[0].description.charAt(0).toUpperCase() + day.weather[0].description.slice(1) %>
+                            </div>
+
+                            <div class="weather-details">
+                                <div class="detail-item">
+                                    <div class="detail-label">Вологість</div>
+                                    <div class="detail-value"><%= Math.round(day.humidity_avg) %>%</div>
+                                </div>
+                                <div class="detail-item">
+                                    <div class="detail-label">Ймовірність опадів</div>
+                                    <div class="detail-value"><%= Math.round(day.pop_avg * 100) %>%</div>
+                                </div>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+            <% } else { %>
+                <h2 class="city-name" id="cityName">Назва міста</h2>
+            <% } %>
         </section>
     </div>
+
 </div>
 </body>
 </html>
