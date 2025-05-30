@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>WeatherNow</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>🌤️ WeatherNow</h1>
+        <p class="subtitle">Детальний прогноз погоди на 7 днів</p>
+    </header>
+    <section class="search-section">
+        <form action="search-form">
+            <input
+                    type="text"
+                    class="search-input"
+                    placeholder="Введіть назву міста (наприклад: Львів, Київ, Одеса...)"
+                    required
+            >
+            <button type="submit" class="search-btn">🔍 Дізнатися погоду</button>
+        </form>
+    </section>
+    <div id="weatherResults">
+        <section class="weather-results">
+            <h2 class="city-name" id="cityName">Назва міста</h2>
+            <div class="forecast-grid">
+                <div class="bay-card"></div>
+            </div>
+        </section>
+    </div>
+</div>
+</body>
+</html>
