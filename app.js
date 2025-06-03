@@ -10,7 +10,7 @@ app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views');
 app.use(express.static('public'));
 
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({extended: true}));
 
 app.get('/', (req, res) => {
     res.render('index');
@@ -21,12 +21,12 @@ app.post('/weather', async (req, res) => {
     const cityName = req.body.city;
     const apiKey = process.env.API_KEY;
 
-    try{
+    try {
         const geoUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${cityName}&limit=5&appid=${apiKey}`;
         const geoRes = await axios.get(geoUrl);
 
         if (!geoRes.data || geoRes.data.length === 0) {
-            return res.send('Місто не знайдено. Спробуйте ще раз.');
+            return res.render('index', { forecast: undefined, city: undefined, error: 'Місто не знайдено. Спробуйте ще раз.' });
         }
 
         const lat = geoRes.data[0].lat;
@@ -37,11 +37,10 @@ app.post('/weather', async (req, res) => {
         const forecast = weatherRes.data.list;
 
         const dailyForecast = groupForecastByDay(forecast);
-        res.render('index', { forecast: dailyForecast, city: cityName });
+        res.render('index', {forecast: dailyForecast, city: cityName});
 
-    }catch(err){
-        console.log(err);
-        res.send('Помилка отримання даних. Спробуйте інше місто.');
+    } catch (err) {
+        res.render('index', {forecast: undefined, city: undefined, error: 'Місто не знайдено. Спробуйте ще раз.'});
     }
 })
 
@@ -54,7 +53,7 @@ const groupForecastByDay = (forecastList) => {
 
     forecastList.forEach(item => {
         const localDate = new Date(item.dt * 1000);
-        const date = localDate.toLocaleDateString('uk-UA', { timeZone: 'Europe/Kyiv' }).split('.').reverse().join('-');
+        const date = localDate.toLocaleDateString('uk-UA', {timeZone: 'Europe/Kyiv'}).split('.').reverse().join('-');
 
         if (!grouped[date]) {
             grouped[date] = [];

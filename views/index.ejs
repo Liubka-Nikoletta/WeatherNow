@@ -6,6 +6,8 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>WeatherNow</title>
+    <meta name="description" content="Детальний прогноз погоди на 5 днів для вашого міста">
+    <meta name="keywords" content="погода, прогноз, 5 днів, місто, WeatherNow">
     <link rel="stylesheet" href="/style.css">
     <link rel="icon" href="/img.png" type="image/x-icon">
 </head>
@@ -41,75 +43,157 @@
     'Squall': '🌬️',
     'Tornado': '🌪️'
 }; %>
+<% if(typeof error != 'undefined'){ %>
+    <div  class="toast-container" id="errorToastContainer"></div>
+<% } %>
 <div class="container">
     <header>
         <h1>🌤️ WeatherNow</h1>
         <p class="subtitle">Детальний прогноз погоди на 5 днів</p>
     </header>
-    <section class="search-section">
-        <form action="/weather" method="POST" class="search-section-grid">
-            <input
-                    name="city"
-                    type="text"
-                    class="search-section-item search-input"
-                    placeholder="Введіть назву міста (наприклад: Львів, Київ, Одеса...)"
-                    required
-            >
-            <button type="submit" class="search-section-item search-btn">🔍<span class="btn-text"> Дізнатися погоду</span></button>
-        </form>
-    </section>
-    <div id="weatherResults">
-        <section class="weather-results">
-            <% if (typeof forecast !== 'undefined') { %>
-                <h2 class="city-name" id="cityName"><%= city %></h2>
-                <div class="forecast-grid">
-                    <% forecast.forEach(day => { %>
-                        <div class="day-card">
-                            <div class="day-header">
-                                <div class="day-name">
-                                    <%= new Date(day.dt * 1000).toLocaleString("uk-UA", { weekday: 'long' }) %>
-                                </div>
-                                <div class="day-date">
-                                    <%= new Date(day.dt * 1000).toLocaleString("uk-UA", { day: '2-digit', month: 'long' }) %>
-                                </div>
-                            </div>
-
-                            <div class="weather-icon">
-                                <%= emojiMap[day.weather[0].description.toLowerCase()] || emojiMap[day.weather[0].main] || '❓' %>
-                            </div>
-
-                            <div class="temperature">
-                                <div class="temp-main">
-                                    <%= Math.round(day.temp_avg - 273.15) %>°C
-                                </div>
-                                <div class="temp-range">
-                                    <%= Math.round(day.temp_min - 273.15) %>° / <%= Math.round(day.temp_max - 273.15) %>°
-                                </div>
-                            </div>
-
-                            <div class="weather-description">
-                                <%= day.weather[0].description.charAt(0).toUpperCase() + day.weather[0].description.slice(1) %>
-                            </div>
-
-                            <div class="weather-details">
-                                <div class="detail-item">
-                                    <div class="detail-label">Вологість</div>
-                                    <div class="detail-value"><%= Math.round(day.humidity_avg) %>%</div>
-                                </div>
-                                <div class="detail-item">
-                                    <div class="detail-label">Ймовірність опадів</div>
-                                    <div class="detail-value"><%= Math.round(day.pop_avg * 100) %>%</div>
-                                </div>
-                            </div>
-                        </div>
-                    <% }); %>
-                </div>
-            <% } else { %>
-                <h2 class="city-name" id="cityName">Введіть назву міста</h2>
-            <% } %>
+    <main>
+        <section class="search-section">
+            <form action="/weather" method="POST" class="search-section-grid">
+                <label for="cityInput" class="sr-only"></label>
+                <input
+                        name="city"
+                        id="cityInput"
+                        type="text"
+                        class="search-section-item search-input"
+                        placeholder="Введіть назву міста (наприклад: Львів, Київ, Одеса...)"
+                        required
+                >
+                <button type="submit" class="search-section-item search-btn">🔍<span
+                            class="btn-text"> Дізнатися погоду</span></button>
+            </form>
         </section>
-    </div>
+        <div id="weatherResults">
+            <section class="weather-results">
+                <% if (typeof forecast !== 'undefined') { %>
+                    <h2 class="city-name" id="cityName"><%= city %></h2>
+                    <div class="forecast-grid">
+                        <% forecast.forEach(day => { %>
+                            <article class="day-card">
+                                <div class="day-header">
+                                    <div class="day-name">
+                                        <%= new Date(day.dt * 1000).toLocaleString("uk-UA", {weekday: 'long'}) %>
+                                    </div>
+                                    <div class="day-date">
+                                        <%= new Date(day.dt * 1000).toLocaleString("uk-UA", {
+                                            day: '2-digit',
+                                            month: 'long'
+                                        }) %>
+                                    </div>
+                                </div>
 
+                                <div class="weather-icon">
+                                    <%= emojiMap[day.weather[0].description.toLowerCase()] || emojiMap[day.weather[0].main] || '❓' %>
+                                </div>
+
+                                <div class="temperature">
+                                    <div class="temp-main">
+                                        <%= Math.round(day.temp_avg - 273.15) %>°C
+                                    </div>
+                                    <div class="temp-range">
+                                        <%= Math.round(day.temp_min - 273.15) %>° / <%= Math.round(day.temp_max - 273.15) %>
+                                        °
+                                    </div>
+                                </div>
+
+                                <div class="weather-description">
+                                    <%= day.weather[0].description.charAt(0).toUpperCase() + day.weather[0].description.slice(1) %>
+                                </div>
+
+                                <div class="weather-details">
+                                    <div class="detail-item">
+                                        <div class="detail-label">Вологість</div>
+                                        <div class="detail-value"><%= Math.round(day.humidity_avg) %>%</div>
+                                    </div>
+                                    <div class="detail-item">
+                                        <div class="detail-label">Ймовірність опадів</div>
+                                        <div class="detail-value"><%= Math.round(day.pop_avg * 100) %>%</div>
+                                    </div>
+                                </div>
+                            </article>
+                        <% }); %>
+                    </div>
+                <% } else { %>
+                    <h2 class="city-name" id="cityName">Введіть назву міста</h2>
+                <% } %>
+            </section>
+        </div>
+    </main>
 </div>
+<script>
+    function showErrorToast(title = 'Помилка', message = 'Щось пішло не так', duration = 5000) {
+        const container = document.getElementById('errorToastContainer');
+
+        const toast = document.createElement('div');
+        toast.className = 'error-toast';
+
+        toast.innerHTML = `
+                <div class="error-icon">❌</div>
+                <div class="error-content">
+                    <div class="error-title">${title}</div>
+                    <div class="error-message">${message}</div>
+                </div>
+                <button class="error-close" aria-label="Закрити">
+                    <svg viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+                <div class="error-progress"></div>
+            `;
+
+        container.appendChild(toast);
+
+        requestAnimationFrame(() => {
+            toast.classList.add('show');
+        });
+
+        const closeToast = () => {
+            toast.classList.remove('show');
+            toast.classList.add('hide');
+
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 400);
+        };
+
+        const closeBtn = toast.querySelector('.error-close');
+        closeBtn.addEventListener('click', closeToast);
+
+        if (duration > 0) {
+            setTimeout(closeToast, duration);
+        }
+
+        let timeoutId;
+        toast.addEventListener('mouseenter', () => {
+            const progressBar = toast.querySelector('.error-progress');
+            if (progressBar) {
+                progressBar.style.animationPlayState = 'paused';
+            }
+        });
+
+        toast.addEventListener('mouseleave', () => {
+            const progressBar = toast.querySelector('.error-progress');
+            if (progressBar) {
+                progressBar.style.animationPlayState = 'running';
+            }
+        });
+
+        return toast;
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+        const serverError = '<%= typeof error !== "undefined" ? error : "" %>';
+
+        if (serverError && serverError.trim() !== '') {
+            showErrorToast('Помилка отримання даних', serverError, 6000);
+        }
+    });
+</script>
 </body>
 </html>
